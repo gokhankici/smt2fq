@@ -1,7 +1,7 @@
-module SMT2FP.Parser ( parse
-                     , CmdParseError(..)
-                     , renderError
-                     ) where
+module SMT2FP.SMT.Parser ( parse
+                         , CmdParseError(..)
+                         , renderError
+                         ) where
 
 import           Control.Exception
 import           Control.Monad (void)
@@ -13,7 +13,7 @@ import           Text.Megaparsec.Char
 import qualified Text.Megaparsec.Char.Lexer as L
 import           Text.Printf
 
-import           SMT2FP.Types  
+import           SMT2FP.SMT.Types
 
 type Parser = Parsec SourcePos String
 

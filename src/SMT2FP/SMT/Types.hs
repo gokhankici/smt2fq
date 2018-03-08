@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module SMT2FP.Types where
+module SMT2FP.SMT.Types where
 
 import           Text.PrettyPrint
 
