@@ -23,6 +23,7 @@ data FQExpr = FQBinOp   { fqExpOp :: FQBinOp
                         , fqExpL :: FQExpr
                         , fqExpR :: FQExpr
                         }
+            | FQNot     FQExpr
             | FQAnds    [FQExpr]
             | FQInvCall { callInv  :: FQInv 
                         , callArgs :: [Id]
@@ -71,11 +72,12 @@ instance PPrint FQExpr where
   toDoc (FQUFCall  {..}) = text "<<<fqufcall>>>"  -- TODO
   toDoc (FQVar     v)    = text v
   toDoc (FQNumber  n)    = int n
+  toDoc (FQNot     e)    = text "!" <> parens (toDoc e)
   toDoc (FQBoolean b)    = if b then text "true" else text "false"
     
 instance PPrint FQBinOp where
   toDoc FQIMPLIES = text "==>"
-  toDoc FQEQU     = text "=="
+  toDoc FQEQU     = text "="
   toDoc FQPLUS    = text "+"
   toDoc FQGE      = text ">="
 

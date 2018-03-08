@@ -35,6 +35,11 @@ parseCommand = parens $
                                          parens (many parseType) <*>
                                          parseType
                                        )) <|>
+               (rWord "declare-relation" *> (DeclareFun <$>
+                                             identifier <*>
+                                             parens (many parseType) <*>
+                                             (return B)
+                                            )) <|>
                (rWord "declare-const" *> (DeclareConst <$>
                                           identifier <*>
                                           parseType
@@ -58,8 +63,7 @@ parseBinOp :: Parser BinOp
 parseBinOp = (symbol "+"      *> return PLUS)    <|>
              (symbol "=>"     *> return IMPLIES) <|>
              (symbol "="      *> return EQU)     <|>
-             (symbol ">="     *> return GE)      <|>
-             (rWord  "select" *> return SELECT)
+             (symbol ">="     *> return GE)
 
 parseTerm :: Parser Term
 parseTerm = parseConst <|>
@@ -75,7 +79,8 @@ parseTerm = parseConst <|>
                 BinOp <$> parseBinOp <*> parseTerm <*> parseTerm <|>
                 rWord "ite" *> (Ite <$> parseTerm <*> parseTerm <*> parseTerm) <|>
                 rWord "and" *> (Ands <$> some parseTerm) <|>
-                parseApp <$> identifier <*> many parseTerm
+                rWord "select" *> (Select <$> identifier <*> some identifier) <|>
+                parseApp <$> identifier <*> many identifier
 
     parseConst = Var <$> identifier <|>
                  Number <$> L.decimal <|>
@@ -128,7 +133,7 @@ rWord w = string w <* notFollowedBy alphaNumChar <* spaceConsumer
 -- | list of reserved words
 keywords :: [String]
 keywords =
-  [ "set-logic", "declare-fun", "assert", "forall", "check-sat", "get-model"
+  [ "set-logic", "declare-fun", "declare-relation", "assert", "forall", "check-sat", "get-model"
   , "and", "select"
   , "true", "false"
   , "Int", "Bool", "Array"

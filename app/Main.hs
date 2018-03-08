@@ -28,13 +28,17 @@ printResults fin fout = do
   let st = pipeline fin s
 
   withFile fout WriteMode $ \h -> do
-    let pr     = hPutStrLn h
-        prLn c = pr (show c) >> pr ""
-    forM_ qualifiers pr
-    pr ""
-    forM_ (st^.binds^.to M.elems) prLn
-    forM_ (st^.constraints)       prLn
-    forM_ (st^.wfConstraints)     prLn
+    let prStr  = hPutStrLn h
+        pr   x = prStr (show x)
+        prLn x = pr x >> prStr ""
+    forM_ qualifiers prStr
+    prStr ""
+
+    forM_ (st^.binds^.to M.elems) pr
+    prStr ""
+
+    forM_ (st^.constraints)   prLn
+    forM_ (st^.wfConstraints) prLn
   return ()
 
 runMain              :: PRType -> IO ()

@@ -26,7 +26,7 @@ data SortedVar = SortedVar { svSymbol :: Id
                            , svSort   :: Type
                            }
 
-data BinOp  = PLUS | EQU | GE | SELECT | IMPLIES
+data BinOp  = PLUS | EQU | GE | IMPLIES
 
 data Term = Forall  { sorts :: [SortedVar]
                     , term  :: Term
@@ -37,11 +37,14 @@ data Term = Forall  { sorts :: [SortedVar]
                     }
           | Ands    [Term]
           | App     { fName :: Id
-                    , fArgs :: [Term]
+                    , fArgs :: [Id]
                     }
           | Ite     { termC :: Term
                     , termL :: Term
                     , termR :: Term
+                    }
+          | Select  { arrName    :: Id
+                    , arrIndices :: [Id]
                     }
           | Var     Id
           | Number  Int
@@ -79,7 +82,6 @@ instance PPrint BinOp where
   toDoc PLUS    = text "+"
   toDoc EQU     = text "="
   toDoc GE      = text ">="
-  toDoc SELECT  = text "select"
   toDoc IMPLIES = text "=>"
 
 psep = parens . sep
@@ -96,7 +98,8 @@ instance PPrint Term where
   toDoc (Boolean True)  = text "true"
   toDoc (Boolean False) = text "false"
   toDoc (Ands ts)       = psep $ (text "and") : (toDoc <$> ts)
-  toDoc (App f ts)      = psep $ (text f) : (toDoc <$> ts)
+  toDoc (Select a is)   = psep $ (text "select") : (text <$> (a:is))
+  toDoc (App f ts)      = psep $ (text f) : (text <$> ts)
                                
 instance Show Type where
   show = pprint
